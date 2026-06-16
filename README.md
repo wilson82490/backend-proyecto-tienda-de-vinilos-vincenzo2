@@ -1,4 +1,4 @@
-# Backend Proyecto vinilos - Jean Paul
+# Backend Proyecto vinilos - 
 
 ## Instalación
 
