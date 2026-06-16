@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const movieSchema = new mongoose.Schema(
+const viniloSchema = new mongoose.Schema(
   {
     title: {
       type: String,
@@ -38,6 +38,6 @@ const movieSchema = new mongoose.Schema(
   },
 );
 
-const Movie = mongoose.model("Movie", movieSchema);
+const Vinilo = mongoose.model("Vinilo", viniloSchema);
 
-export default Movie;
+export default Vinilo;

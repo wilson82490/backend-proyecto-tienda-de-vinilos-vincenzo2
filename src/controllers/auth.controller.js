@@ -11,10 +11,30 @@ const isPasswordValid = (password) => {
   return password.length >= 6;
 };
 
+const getJwtSecret = () => {
+  return process.env.JWT_SECRET || "dev_jwt_secret_change_me";
+};
+
+const isBcryptHash = (value) => {
+  return typeof value === "string" && value.startsWith("$2");
+};
+
+const comparePassword = async (plainPassword, storedPassword) => {
+  if (isBcryptHash(storedPassword)) {
+    return bcrypt.compare(plainPassword, storedPassword);
+  }
+
+  return plainPassword === storedPassword;
+};
+
 const getToken = (user) => {
-  return jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+  return jwt.sign({ userId: user._id }, getJwtSecret(), {
     expiresIn: "7d",
   });
+};
+
+const isUserAdmin = (user) => {
+  return Boolean(user.admin ?? user.isAdmin);
 };
 
 export const register = async (req, res) => {
@@ -94,10 +114,15 @@ export const login = async (req, res) => {
       return res.status(401).json({ message: "Credenciales invalidas" });
     }
 
-    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    const isPasswordCorrect = await comparePassword(password, user.password);
 
     if (!isPasswordCorrect) {
       return res.status(401).json({ message: "Credenciales invalidas" });
+    }
+
+    if (!isBcryptHash(user.password)) {
+      user.password = await bcrypt.hash(password, 10);
+      await user.save();
     }
 
     const token = getToken(user);
@@ -109,7 +134,7 @@ export const login = async (req, res) => {
         _id: user._id,
         name: user.name,
         email: user.email,
-        admin: user.admin,
+        admin: isUserAdmin(user),
       },
     });
   } catch (error) {

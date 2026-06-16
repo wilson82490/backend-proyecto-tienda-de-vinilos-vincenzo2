@@ -7,7 +7,7 @@ connectDB();
 import express from "express";
 import cors from "cors";
 
-import movieRouter from "./src/routes/movie.router.js";
+import viniloRouter from "./src/routes/vinilo.router.js";
 import authRouter from "./src/routes/auth.router.js";
 
 const app = express();
@@ -16,10 +16,10 @@ app.use(express.json());
 app.use(cors());
 
 app.get("/", (req, res) => {
-  res.json({ message: "Bienvenidos a la API de películas y series" });
+  res.json({ message: "Bienvenidos a la API de vinilos" });
 });
 
-app.use("/api/movies", movieRouter);
+app.use("/api/vinilos", viniloRouter);
 app.use("/api/auth", authRouter);
 
 const PORT = process.env.PORT || 3001;

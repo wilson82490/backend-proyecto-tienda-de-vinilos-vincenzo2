@@ -1,12 +1,13 @@
 {
-  "name": "backend-proyecto-peliculas-series-jean-paul",
+  "name": "backend-proyecto-tienda-de-vinilos-vincenzo2",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
     "dev": "node --watch index.js",
-    "seed": "node src/seeders/movie.seeder.js"
+    "seed": "node src/seeders/vinilo.seeder.js",
+    "seed:users": "node src/seeders/user.seeder.js"
   },
   "author": "Jean Paul Ferreira",
   "license": "MIT",

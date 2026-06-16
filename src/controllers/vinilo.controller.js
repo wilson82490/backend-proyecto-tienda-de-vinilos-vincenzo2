@@ -1,6 +1,6 @@
-import Movie from "../models/Movie.js";
+import Vinilo from "../models/Vinilo.js";
 
-export const createMovie = async (req, res) => {
+export const createVinilo = async (req, res) => {
   try {
     await new Promise((resolve) => setTimeout(resolve, 3000));
 
@@ -18,9 +18,9 @@ export const createMovie = async (req, res) => {
         .json({ message: "Todos los campos son obligatorios" });
     }
 
-    const movie = await Movie.create(req.body);
+    const vinilo = await Vinilo.create(req.body);
 
-    res.status(201).json(movie);
+    res.status(201).json(vinilo);
   } catch (error) {
     // console.log(error);
 
@@ -28,39 +28,39 @@ export const createMovie = async (req, res) => {
       return res.status(422).json({ message: error.message });
     }
 
-    res.status(500).json({ message: "Error al crear la pelicula" });
+    res.status(500).json({ message: "Error al crear el vinilo" });
   }
 };
 
-export const getMovies = async (req, res) => {
+export const getVinilos = async (req, res) => {
   try {
-    const movies = await Movie.find().select("-description -__v");
+    const vinilos = await Vinilo.find().select("-description -__v");
 
-    res.json(movies);
+    res.json(vinilos);
   } catch (error) {
     // console.log(error.message);
-    res.status(500).json({ message: "Error al obtener las peliculas" });
+    res.status(500).json({ message: "Error al obtener los vinilos" });
   }
 };
 
-export const getMovieById = async (req, res) => {
+export const getViniloById = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const movie = await Movie.findById(id);
+    const vinilo = await Vinilo.findById(id);
 
-    if (!movie) {
-      return res.status(404).json({ message: "Pelicula no encontrada" });
+    if (!vinilo) {
+      return res.status(404).json({ message: "Vinilo no encontrado" });
     }
 
-    res.json(movie);
+    res.json(vinilo);
   } catch (error) {
     // console.log(error.message);
-    res.status(500).json({ message: "Error al obtener la pelicula" });
+    res.status(500).json({ message: "Error al obtener el vinilo" });
   }
 };
 
-export const updateMovie = async (req, res) => {
+export const updateVinilo = async (req, res) => {
   try {
     await new Promise((resolve) => setTimeout(resolve, 3000));
 
@@ -72,12 +72,12 @@ export const updateMovie = async (req, res) => {
         .json({ message: "El titulo tiene que ser un string" });
     }
 
-    const movie = await Movie.findByIdAndUpdate(id, req.body, {
+    const vinilo = await Vinilo.findByIdAndUpdate(id, req.body, {
       new: true,
       runValidators: true,
     });
 
-    res.json(movie);
+    res.json(vinilo);
   } catch (error) {
     // console.log(error);
 
@@ -89,24 +89,24 @@ export const updateMovie = async (req, res) => {
       return res.status(404).json({ message: error.message });
     }
 
-    res.status(500).json({ message: "Error al actualizar la pelicula" });
+    res.status(500).json({ message: "Error al actualizar el vinilo" });
   }
 };
 
-export const deleteMovie = async (req, res) => {
+export const deleteVinilo = async (req, res) => {
   try {
     await new Promise((resolve) => setTimeout(resolve, 3000));
 
     const { id } = req.params;
 
-    const movie = await Movie.findByIdAndDelete(id);
+    const vinilo = await Vinilo.findByIdAndDelete(id);
 
-    if (!movie) {
-      return res.status(404).json({ message: "Pelicula no encontrada" });
+    if (!vinilo) {
+      return res.status(404).json({ message: "Vinilo no encontrado" });
     }
 
-    res.json({ message: "Pelicula borrada" });
+    res.json({ message: "Vinilo borrado" });
   } catch (error) {
-    res.status(500).json({ message: "Error al borrar la pelicula" });
+    res.status(500).json({ message: "Error al borrar el vinilo" });
   }
 };

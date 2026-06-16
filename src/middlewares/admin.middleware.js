@@ -4,7 +4,7 @@ export const adminMiddleware = async (req, res, next) => {
   try {
     const user = await User.findById(req.user.userId);
 
-    if (!user || !user.admin) {
+    if (!user || !(user.admin ?? user.isAdmin)) {
       return res.status(403).json({ message: "Acceso denegado" });
     }
 

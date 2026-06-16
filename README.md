@@ -1,4 +1,4 @@
-# Backend Proyecto peliculas y series - Jean Paul
+# Backend Proyecto vinilos - Jean Paul
 
 ## Instalación
 
@@ -11,7 +11,7 @@
 2. Navega al directorio del proyecto:
 
    ```bash
-   cd backend-proyecto-peliculas-series-jean-paul
+   cd backend-proyecto-tienda-de-vinilos-vincenzo2
    ```
 
 3. Cambiar a la rama `dev`:
@@ -55,9 +55,9 @@ npm run seed
 
 Una vez que el servidor esté en funcionamiento, puedes acceder a la API a través de `http://localhost:<PORT>/api`, donde `<PORT>` es el puerto que configuraste en tu archivo `.env`.
 
-### Obtener todas las películas
+### Obtener todas los vinilos
 
-metodo GET a `/api/movies` para obtener una lista de todas las películas.
+metodo GET a `/api/vinilos` para obtener una lista de todas los vinilos.
 
 response:
 
@@ -76,9 +76,9 @@ response:
 ]
 ```
 
-### Obtener una película por ID
+### Obtener un vinilo por ID
 
-metodo GET a `/api/movies/:id` para obtener los detalles de una película específica por su ID.
+metodo GET a `/api/vinilos/:id` para obtener los detalles de un vinilo específica por su ID.
 
 response:
 
@@ -101,6 +101,6 @@ status: 404
 
 ```json
 {
-  "message": "Pelicula no encontrada"
+  "message": "Vinilo no encontrado"
 }
 ```

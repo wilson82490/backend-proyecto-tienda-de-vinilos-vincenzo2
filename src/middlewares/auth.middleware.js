@@ -8,14 +8,14 @@ export const authMiddleware = (req, res, next) => {
       return res.status(401).json({ message: "Falta el token" });
     }
 
-    if (!authHeader.startsWith("Bearer")) {
-      return res.starus(401).json({ message: "Token invalido" });
+    if (!authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ message: "Token invalido" });
     }
 
-    // Brearer token
     const [, token] = authHeader.split(" ");
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const jwtSecret = process.env.JWT_SECRET || "dev_jwt_secret_change_me";
+    const decoded = jwt.verify(token, jwtSecret);
 
     req.user = decoded;
 
