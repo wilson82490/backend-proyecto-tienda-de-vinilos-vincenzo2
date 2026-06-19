@@ -13,6 +13,16 @@ import authRouter from "./src/routes/auth.router.js";
 const app = express();
 
 app.use(express.json());
+app.use((err, req, res, next) => {
+  if (err instanceof SyntaxError && err.status === 400 && "body" in err) {
+    return res.status(400).json({
+      message:
+        "JSON inválido. Envía un objeto con Content-Type: application/json",
+    });
+  }
+
+  next(err);
+});
 app.use(cors());
 
 app.get("/", (req, res) => {

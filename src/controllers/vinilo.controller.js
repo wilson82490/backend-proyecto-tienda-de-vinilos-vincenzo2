@@ -66,16 +66,26 @@ export const updateVinilo = async (req, res) => {
 
     const { id } = req.params;
 
-    if (typeof req.body.title != "string") {
+    if (typeof req.body?.title != "string") {
       return res
         .status(422)
         .json({ message: "El titulo tiene que ser un string" });
     }
 
-    const vinilo = await Vinilo.findByIdAndUpdate(id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+    const { title, description, genre, year, image, featured } = req.body;
+
+    const vinilo = await Vinilo.findByIdAndUpdate(
+      id,
+      { title, description, genre, year, image, featured },
+      {
+        new: true,
+        runValidators: true,
+      },
+    );
+
+    if (!vinilo) {
+      return res.status(404).json({ message: "Vinilo no encontrado" });
+    }
 
     res.json(vinilo);
   } catch (error) {
