@@ -40,7 +40,7 @@ export const getVinilos = async (req, res) => {
     const limit = parseInt(req.query.limit) || 4;
     const skip = (page - 1) * limit;
 
-    const vinilos = await Vinilo.find({
+    const filter = {
       $and: [
         {
           $or: [
@@ -60,13 +60,24 @@ export const getVinilos = async (req, res) => {
         },
         genre ? { genre } : {},
       ],
-    })
-      .select("-description -__v")
-      .sort({ [sortBy]: order === "desc" ? -1 : 1 })
-      .skip(skip)
-      .limit(limit);
+    };
 
-    res.json(vinilos);
+    const [vinilos, total] = await Promise.all([
+      Vinilo.find(filter)
+        .select("-description -__v")
+        .sort({ [sortBy]: order === "desc" ? -1 : 1 })
+        .skip(skip)
+        .limit(limit),
+      Vinilo.countDocuments(filter),
+    ]);
+
+    res.json({
+      data: vinilos,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit) || 1,
+    });
   } catch (error) {
     // console.log(error.message);
     res.status(500).json({ message: "Error al obtener los vinilos" });

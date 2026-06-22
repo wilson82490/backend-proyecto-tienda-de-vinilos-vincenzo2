@@ -46,7 +46,9 @@ describe("CRUD Vinilos", function () {
     const response = await request(app).get("/api/vinilos");
 
     expect(response.status).to.equal(200);
-    expect(response.body).to.be.an("array");
+    expect(response.body.data).to.be.an("array");
+    expect(response.body).to.have.property("total");
+    expect(response.body).to.have.property("totalPages");
   });
 
   test("el Admin tiene que poder crear un vinilo", async () => {
