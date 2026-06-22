@@ -1,132 +1,24 @@
-<!-- # Backend Proyecto vinilos - 
+# Vinilos API
 
-## Instalación
-
-1. Clona el repositorio:
-
-   ```bash
-   git clone <repository_url>
-   ```
-
-2. Navega al directorio del proyecto:
-
-   ```bash
-   cd backend-proyecto-tienda-de-vinilos-vincenzo2
-   ```
-
-3. Cambiar a la rama `dev`:
-
-   ```bash
-   git switch dev
-   ```
-
-4. Instala las dependencias:
-
-   ```bash
-   npm install
-   ```
-
-5. Crea un archivo `.env` basado en el archivo `.env-example` y configura tus variables de entorno:
-
-   ```bash
-   cp .env-example .env
-   ```
-
-   Luego, edita el archivo `.env` para agregar tu configuración personalizada, como el puerto y la URI de MongoDB.
-
-6. Inicia el servidor:
-   ```bash
-   npm start
-   ```
-   Para desarrollo con recarga automática, puedes usar:
-   ```bash
-   npm run dev
-   ```
-
-## Seeders
-
-Si deseas poblar la base de datos con datos de ejemplo, puedes ejecutar el seeder:
-
-```bash
-npm run seed
-```
-
-## Uso
-
-Una vez que el servidor esté en funcionamiento, puedes acceder a la API a través de `http://localhost:<PORT>/api`, donde `<PORT>` es el puerto que configuraste en tu archivo `.env`.
-
-### Obtener todas los vinilos
-
-metodo GET a `/api/vinilos` para obtener una lista de todas los vinilos.
-
-response:
-
-```json
-[
-  {
-    "_id": "6a2...",
-    "title": "Breaking Bad",
-    "genre": "Drama",
-    "year": 2008,
-    "image": "https://picsum.photos/300/400?random=1",
-    "featured": true,
-    "createdAt": "2026-06-05T17:31:02.907Z",
-    "updatedAt": "2026-06-05T17:31:02.907Z"
-  }
-]
-```
-
-### Obtener un vinilo por ID
-
-metodo GET a `/api/vinilos/:id` para obtener los detalles de un vinilo específica por su ID.
-
-response:
-
-status: 200
-
-```json
-{
-  "_id": "6a2...",
-  "title": "Breaking Bad",
-  "genre": "Drama",
-  "year": 2008,
-  "image": "https://picsum.photos/300/400?random=1",
-  "featured": true,
-  "createdAt": "2026-06-05T17:31:02.907Z",
-  "updatedAt": "2026-06-05T17:31:02.907Z"
-}
-```
-
-status: 404
-
-```json
-{
-  "message": "Vinilo no encontrado"
-}
-```
- -->
-
-
- # Vinilos API
-
-API REST desarrollada con Node.js, Express y MongoDB para gestionar películas y series.
+API REST desarrollada con Node.js, Express y MongoDB para gestionar vinilos.
 
 ---
 
 # Características
 
-- CRUD completo de películas
+- CRUD completo de vinilos
 - Registro de usuarios
 - Inicio de sesión con JWT
 - Contraseñas encriptadas con bcrypt
 - Autenticación mediante Bearer Token
+- Rutas protegidas con rol de administrador
 - MongoDB Atlas
 - Seeder de datos iniciales
-- Tests con Vitest y Supertest
+- Tests con Mocha, Chai y Supertest
 
 ---
 
-# 🛠 Tecnologías utilizadas
+# Tecnologías utilizadas
 
 - Node.js
 - Express
@@ -136,7 +28,8 @@ API REST desarrollada con Node.js, Express y MongoDB para gestionar películas y
 - bcryptjs
 - dotenv
 - cors
-- Vitest
+- Mocha
+- Chai
 - Supertest
 
 ---
@@ -152,7 +45,13 @@ git clone <url-del-repositorio>
 Ingresar al proyecto:
 
 ```bash
-cd backend-proyecto-tienda-de-vinilos-series
+cd backend-proyecto-tienda-de-vinilos-vincenzo2
+```
+
+Cambiar a la rama `dev`:
+
+```bash
+git switch dev
 ```
 
 Instalar dependencias:
@@ -165,9 +64,15 @@ npm install
 
 # Variables de entorno
 
-Crear un archivo `.env` utilizando como referencia `.env.example`.
+Crear un archivo `.env` a partir de `.env-example`:
 
-## .env.example
+```bash
+cp .env-example .env
+```
+
+Luego edita `.env` con tu configuración.
+
+## .env-example
 
 ```env
 PORT=
@@ -211,8 +116,16 @@ npm test
 
 # Cargar datos iniciales
 
+Poblar la base de datos con vinilos de ejemplo:
+
 ```bash
 npm run seed
+```
+
+Poblar la base de datos con usuarios de ejemplo:
+
+```bash
+npm run seed:users
 ```
 
 ---
@@ -227,7 +140,7 @@ npm run seed
 
 Devuelve un mensaje de bienvenida.
 
-### Respuesta Exitosa
+### Respuesta exitosa
 
 #### Status: 200 OK
 
@@ -257,19 +170,24 @@ Registra un nuevo usuario.
 }
 ```
 
-### Respuesta Exitosa
+### Respuesta exitosa
 
 #### Status: 201 Created
 
 ```json
 {
-  "message": "Usuario registrado correctamente"
+  "message": "Usuario registrado correctamente",
+  "user": {
+    "_id": "...",
+    "name": "Vincenzo Acconcia",
+    "email": "user@example.com"
+  }
 }
 ```
 
-### Posibles Errores
+### Posibles errores
 
-#### Status: 400 Bad Request
+#### Status: 422 Unprocessable Entity
 
 ```json
 {
@@ -277,11 +195,27 @@ Registra un nuevo usuario.
 }
 ```
 
+#### Status: 422 Unprocessable Entity
+
+```json
+{
+  "message": "El correo no es valido"
+}
+```
+
+#### Status: 422 Unprocessable Entity
+
+```json
+{
+  "message": "Contraseña muy corta, mínimo 6 caracteres"
+}
+```
+
 #### Status: 400 Bad Request
 
 ```json
 {
-  "message": "El usuario ya existe"
+  "message": "El correo ya esta registrado"
 }
 ```
 
@@ -289,7 +223,7 @@ Registra un nuevo usuario.
 
 ```json
 {
-  "message": "Error interno del servidor"
+  "message": "Error al registrar al usuario"
 }
 ```
 
@@ -310,24 +244,26 @@ Inicia sesión y devuelve un token JWT.
 }
 ```
 
-### Respuesta Exitosa
+### Respuesta exitosa
 
 #### Status: 200 OK
 
 ```json
 {
+  "message": "Login correcto",
   "token": "jwt-token",
   "user": {
     "_id": "...",
     "name": "Juan Pérez",
-    "email": "example@example.com"
+    "email": "example@example.com",
+    "admin": false
   }
 }
 ```
 
-### Posibles Errores
+### Posibles errores
 
-#### Status: 400 Bad Request
+#### Status: 422 Unprocessable Entity
 
 ```json
 {
@@ -339,7 +275,7 @@ Inicia sesión y devuelve un token JWT.
 
 ```json
 {
-  "message": "Credenciales inválidas"
+  "message": "Credenciales invalidas"
 }
 ```
 
@@ -347,7 +283,7 @@ Inicia sesión y devuelve un token JWT.
 
 ```json
 {
-  "message": "Error interno del servidor"
+  "message": "Error al iniciar sesión"
 }
 ```
 
@@ -355,13 +291,13 @@ Inicia sesión y devuelve un token JWT.
 
 # Vinilos
 
-## Obtener todos las Vinilos
+## Obtener todos los vinilos
 
 ### GET /api/vinilos
 
-Devuelve todas las películas.
+Devuelve todos los vinilos.
 
-### Respuesta Exitosa
+### Respuesta exitosa
 
 #### Status: 200 OK
 
@@ -369,19 +305,24 @@ Devuelve todas las películas.
 [
   {
     "_id": "...",
-    "title": "thriller",
+    "title": "Thriller",
     "genre": "pop",
-    "year": 1989,
-    "image": "https://..."
+    "year": 1982,
+    "image": "https://...",
+    "featured": false,
+    "createdAt": "2026-06-05T17:31:02.907Z",
+    "updatedAt": "2026-06-05T17:31:02.907Z"
   }
 ]
 ```
+
+### Posibles errores
 
 #### Status: 500 Internal Server Error
 
 ```json
 {
-  "message": "Error interno del servidor"
+  "message": "Error al obtener los vinilos"
 }
 ```
 
@@ -389,31 +330,34 @@ Devuelve todas las películas.
 
 ## Obtener vinilo por ID
 
-### GET /api/vinilo/:id
+### GET /api/vinilos/:id
 
-Devuelve una película por su ID.
+Devuelve un vinilo por su ID.
 
-### Respuesta Exitosa
+### Respuesta exitosa
 
 #### Status: 200 OK
 
 ```json
 {
   "_id": "...",
-  "title": "thriller",
+  "title": "Thriller",
   "genre": "pop",
-  "year": 1989,
-  "image": "https://..."
+  "year": 1982,
+  "image": "https://...",
+  "featured": false,
+  "createdAt": "2026-06-05T17:31:02.907Z",
+  "updatedAt": "2026-06-05T17:31:02.907Z"
 }
 ```
 
-### Posibles Errores
+### Posibles errores
 
 #### Status: 404 Not Found
 
 ```json
 {
-  "message": "vinilo no encontrada"
+  "message": "Vinilo no encontrado"
 }
 ```
 
@@ -421,7 +365,7 @@ Devuelve una película por su ID.
 
 ```json
 {
-  "message": "Error interno del servidor"
+  "message": "Error al obtener el vinilo"
 }
 ```
 
@@ -430,7 +374,8 @@ Devuelve una película por su ID.
 ## Crear vinilo
 
 ### POST /api/vinilos
-Requiere autenticación.
+
+Requiere autenticación y rol de administrador.
 
 ### Headers
 
@@ -442,42 +387,53 @@ Authorization: Bearer TOKEN
 
 ```json
 {
-  "title": "thriller",
+  "title": "Thriller",
   "genre": "pop",
-  "year": 1989,
+  "year": 1982,
   "image": "https://..."
 }
 ```
 
-### Respuesta Exitosa
+### Respuesta exitosa
 
 #### Status: 201 Created
 
 ```json
 {
   "_id": "...",
-  "title": "thriller",
+  "title": "Thriller",
   "genre": "pop",
-  "year": 1989,
-  "image": "https://..."
+  "year": 1982,
+  "image": "https://...",
+  "featured": false,
+  "createdAt": "2026-06-05T17:31:02.907Z",
+  "updatedAt": "2026-06-05T17:31:02.907Z"
 }
 ```
 
-### Posibles Errores
+### Posibles errores
 
 #### Status: 401 Unauthorized
 
 ```json
 {
-  "message": "No autorizado"
+  "message": "Falta el token"
 }
 ```
 
-#### Status: 400 Bad Request
+#### Status: 403 Forbidden
 
 ```json
 {
-  "message": "Datos inválidos"
+  "message": "Acceso denegado"
+}
+```
+
+#### Status: 422 Unprocessable Entity
+
+```json
+{
+  "message": "Todos los campos son obligatorios"
 }
 ```
 
@@ -485,17 +441,17 @@ Authorization: Bearer TOKEN
 
 ```json
 {
-  "message": "Error interno del servidor"
+  "message": "Error al crear el vinilo"
 }
 ```
 
 ---
 
-## Actualizar película
+## Actualizar vinilo
 
-### PUT /api/movies/:id
+### PUT /api/vinilos/:id
 
-Requiere autenticación.
+Requiere autenticación y rol de administrador.
 
 ### Headers
 
@@ -503,27 +459,49 @@ Requiere autenticación.
 Authorization: Bearer TOKEN
 ```
 
-### Respuesta Exitosa
-
-#### Status: 200 OK
+### Body
 
 ```json
 {
-  "_id": "...",
-  "title": "thriller Recargada",
+  "title": "Thriller Remastered",
   "genre": "pop",
   "year": 2003,
   "image": "https://..."
 }
 ```
 
-### Posibles Errores
+### Respuesta exitosa
+
+#### Status: 200 OK
+
+```json
+{
+  "_id": "...",
+  "title": "Thriller Remastered",
+  "genre": "pop",
+  "year": 2003,
+  "image": "https://...",
+  "featured": false,
+  "createdAt": "2026-06-05T17:31:02.907Z",
+  "updatedAt": "2026-06-05T17:31:02.907Z"
+}
+```
+
+### Posibles errores
 
 #### Status: 401 Unauthorized
 
 ```json
 {
-  "message": "No autorizado"
+  "message": "Token invalido"
+}
+```
+
+#### Status: 403 Forbidden
+
+```json
+{
+  "message": "Acceso denegado"
 }
 ```
 
@@ -531,7 +509,15 @@ Authorization: Bearer TOKEN
 
 ```json
 {
-  "message": "vinilo no encontrada"
+  "message": "Vinilo no encontrado"
+}
+```
+
+#### Status: 422 Unprocessable Entity
+
+```json
+{
+  "message": "El titulo tiene que ser un string"
 }
 ```
 
@@ -539,17 +525,17 @@ Authorization: Bearer TOKEN
 
 ```json
 {
-  "message": "Error interno del servidor"
+  "message": "Error al actualizar el vinilo"
 }
 ```
 
 ---
 
-## Eliminar película
+## Eliminar vinilo
 
-### DELETE /api/movies/:id
+### DELETE /api/vinilos/:id
 
-Requiere autenticación.
+Requiere autenticación y rol de administrador.
 
 ### Headers
 
@@ -557,23 +543,31 @@ Requiere autenticación.
 Authorization: Bearer TOKEN
 ```
 
-### Respuesta Exitosa
+### Respuesta exitosa
 
 #### Status: 200 OK
 
 ```json
 {
-  "message": "Vinilo eliminado correctamente"
+  "message": "Vinilo borrado"
 }
 ```
 
-### Posibles Errores
+### Posibles errores
 
 #### Status: 401 Unauthorized
 
 ```json
 {
-  "message": "No autorizado"
+  "message": "Falta el token"
+}
+```
+
+#### Status: 403 Forbidden
+
+```json
+{
+  "message": "Acceso denegado"
 }
 ```
 
@@ -581,7 +575,7 @@ Authorization: Bearer TOKEN
 
 ```json
 {
-  "message": "Vinilo no encontrada"
+  "message": "Vinilo no encontrado"
 }
 ```
 
@@ -589,7 +583,7 @@ Authorization: Bearer TOKEN
 
 ```json
 {
-  "message": "Error interno del servidor"
+  "message": "Error al borrar el vinilo"
 }
 ```
 
@@ -609,17 +603,19 @@ https://mi-api.onrender.com
 
 ```txt
 src/
-│
 ├── config/
 ├── controllers/
 ├── middlewares/
 ├── models/
 ├── routes/
-├── seeders/
-├── tests/
-│
-└── app.js
+└── seeders/
 
+test/
+├── auth.test.js
+├── vinilos.test.js
+└── setup.js
+
+app.js
 index.js
 ```
 
