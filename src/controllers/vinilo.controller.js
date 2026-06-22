@@ -2,7 +2,7 @@ import Vinilo from "../models/Vinilo.js";
 
 export const createVinilo = async (req, res) => {
   try {
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    // await new Promise((resolve) => setTimeout(resolve, 3000));
 
     const { title, genre, year, image } = req.body;
 
@@ -34,7 +34,37 @@ export const createVinilo = async (req, res) => {
 
 export const getVinilos = async (req, res) => {
   try {
-    const vinilos = await Vinilo.find().select("-description -__v");
+    const { sortBy = "title", order = "asc", search = "", genre } = req.query;
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 4;
+    const skip = (page - 1) * limit;
+
+    const vinilos = await Vinilo.find({
+      $and: [
+        {
+          $or: [
+            {
+              title: {
+                $regex: search,
+                $options: "i",
+              },
+            },
+            {
+              description: {
+                $regex: search,
+                $options: "i",
+              },
+            },
+          ],
+        },
+        genre ? { genre } : {},
+      ],
+    })
+      .select("-description -__v")
+      .sort({ [sortBy]: order === "desc" ? -1 : 1 })
+      .skip(skip)
+      .limit(limit);
 
     res.json(vinilos);
   } catch (error) {
@@ -62,30 +92,20 @@ export const getViniloById = async (req, res) => {
 
 export const updateVinilo = async (req, res) => {
   try {
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    // await new Promise((resolve) => setTimeout(resolve, 3000));
 
     const { id } = req.params;
 
-    if (typeof req.body?.title != "string") {
+    if (typeof req.body.title != "string") {
       return res
         .status(422)
         .json({ message: "El titulo tiene que ser un string" });
     }
 
-    const { title, description, genre, year, image, featured } = req.body;
-
-    const vinilo = await Vinilo.findByIdAndUpdate(
-      id,
-      { title, description, genre, year, image, featured },
-      {
-        new: true,
-        runValidators: true,
-      },
-    );
-
-    if (!vinilo) {
-      return res.status(404).json({ message: "Vinilo no encontrado" });
-    }
+    const vinilo = await Vinilo.findByIdAndUpdate(id, req.body, {
+      new: true,
+      runValidators: true,
+    });
 
     res.json(vinilo);
   } catch (error) {
