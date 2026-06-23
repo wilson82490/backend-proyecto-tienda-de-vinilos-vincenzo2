@@ -3,6 +3,8 @@ import { Router } from "express";
 import {
   createVinilo,
   getVinilos,
+  getVinilosGenres,
+  getVinilosFeatured,
   getViniloById,
   updateVinilo,
   deleteVinilo,
@@ -16,6 +18,9 @@ const router = Router();
 // prefijo: /api/vinilos
 
 router.post("/", authMiddleware, adminMiddleware, createVinilo);
+
+router.get("/genres", getVinilosGenres);
+router.get("/featured", getVinilosFeatured);
 
 router.get("/", getVinilos);
 router.get("/:id", getViniloById);

@@ -62,7 +62,7 @@ export const getVinilos = async (req, res) => {
       ],
     };
 
-    const [vinilos, total] = await Promise.all([
+    const [vinilos, totalItems] = await Promise.all([
       Vinilo.find(filter)
         .select("-description -__v")
         .sort({ [sortBy]: order === "desc" ? -1 : 1 })
@@ -72,15 +72,40 @@ export const getVinilos = async (req, res) => {
     ]);
 
     res.json({
-      data: vinilos,
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit) || 1,
+      vinilos,
+      totalPages: Math.ceil(totalItems / limit) || 1,
+      currentPage: page,
+      totalItems,
     });
   } catch (error) {
     // console.log(error.message);
     res.status(500).json({ message: "Error al obtener los vinilos" });
+  }
+};
+
+export const getVinilosGenres = async (req, res) => {
+  try {
+    const genres = await Vinilo.distinct("genre");
+
+    res.json(genres);
+  } catch (error) {
+    res.status(500).json({ message: "Error al obtener los generos" });
+  }
+};
+
+export const getVinilosFeatured = async (req, res) => {
+  try {
+    const featuredVinilos = await Vinilo.find({ featured: true })
+      .select("-description -__v")
+      .limit(3);
+
+    res.json({
+      vinilos: featuredVinilos,
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error al obtener los vinilos destacados" });
   }
 };
 
@@ -136,8 +161,6 @@ export const updateVinilo = async (req, res) => {
 
 export const deleteVinilo = async (req, res) => {
   try {
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-
     const { id } = req.params;
 
     const vinilo = await Vinilo.findByIdAndDelete(id);

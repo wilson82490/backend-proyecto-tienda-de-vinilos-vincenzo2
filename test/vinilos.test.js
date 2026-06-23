@@ -46,9 +46,24 @@ describe("CRUD Vinilos", function () {
     const response = await request(app).get("/api/vinilos");
 
     expect(response.status).to.equal(200);
-    expect(response.body.data).to.be.an("array");
-    expect(response.body).to.have.property("total");
+    expect(response.body.vinilos).to.be.an("array");
+    expect(response.body).to.have.property("totalItems");
     expect(response.body).to.have.property("totalPages");
+    expect(response.body).to.have.property("currentPage");
+  });
+
+  test("tiene que traer los generos disponibles", async () => {
+    const response = await request(app).get("/api/vinilos/genres");
+
+    expect(response.status).to.equal(200);
+    expect(response.body).to.be.an("array");
+  });
+
+  test("tiene que traer los vinilos destacados", async () => {
+    const response = await request(app).get("/api/vinilos/featured");
+
+    expect(response.status).to.equal(200);
+    expect(response.body.vinilos).to.be.an("array");
   });
 
   test("el Admin tiene que poder crear un vinilo", async () => {
