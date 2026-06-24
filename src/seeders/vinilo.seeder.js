@@ -11,6 +11,7 @@ const vinilos = [
       "Edición clásica en vinilo del álbum de The Beatles, con sonido cálido y arte de portada icónico.",
     genre: "Rock",
     year: 1969,
+    price: 34.99,
     image: "https://picsum.photos/300/400?random=1",
     featured: true,
   },
@@ -20,6 +21,7 @@ const vinilos = [
       "Uno de los discos pop más vendidos de la historia, ideal para coleccionistas y amantes del vinilo.",
     genre: "Pop",
     year: 1982,
+    price: 29.99,
     image: "https://picsum.photos/300/400?random=2",
     featured: true,
   },
@@ -29,6 +31,7 @@ const vinilos = [
       "Vinilo esencial de Miles Davis, reconocido por su sonido elegante y sus improvisaciones memorables.",
     genre: "Jazz",
     year: 1959,
+    price: 32.5,
     image: "https://picsum.photos/300/400?random=3",
   },
   {
@@ -37,6 +40,7 @@ const vinilos = [
       "Álbum de Amy Winehouse con influencias soul, jazz y R&B, perfecto para escuchar en tornamesa.",
     genre: "Soul",
     year: 2006,
+    price: 27.99,
     image: "https://picsum.photos/300/400?random=4",
     featured: true,
   },
@@ -46,6 +50,7 @@ const vinilos = [
       "Un vinilo fundamental que mezcla hip hop, soul y R&B con letras honestas y producción atemporal.",
     genre: "Hip hop",
     year: 1998,
+    price: 31,
     image: "https://picsum.photos/300/400?random=5",
   },
   {
@@ -54,6 +59,7 @@ const vinilos = [
       "Clásico de Fleetwood Mac con canciones inolvidables y una producción que brilla en formato vinilo.",
     genre: "Rock",
     year: 1977,
+    price: 28.99,
     image: "https://picsum.photos/300/400?random=6",
     featured: true,
   },
@@ -63,6 +69,7 @@ const vinilos = [
       "Grabación histórica de John Coltrane, una pieza imprescindible para cualquier colección de jazz.",
     genre: "Jazz",
     year: 1958,
+    price: 35,
     image: "https://picsum.photos/300/400?random=7",
   },
   {
@@ -71,6 +78,7 @@ const vinilos = [
       "Producción moderna de Daft Punk con espíritu disco, bajos profundos y excelente presencia en vinilo.",
     genre: "Pop",
     year: 2013,
+    price: 39.99,
     image: "https://picsum.photos/300/400?random=8",
   },
   {
@@ -79,6 +87,7 @@ const vinilos = [
       "Obra maestra de Marvin Gaye con sonido soul envolvente y mensaje social vigente.",
     genre: "Soul",
     year: 1971,
+    price: 30.5,
     image: "https://picsum.photos/300/400?random=9",
   },
 ];

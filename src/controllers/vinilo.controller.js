@@ -4,7 +4,7 @@ export const createVinilo = async (req, res) => {
   try {
     // await new Promise((resolve) => setTimeout(resolve, 3000));
 
-    const { title, genre, year, image } = req.body;
+    const { title, genre, year, image, price } = req.body;
 
     if (!title || title.trim() === "" || title.length < 3) {
       return res.status(422).json({
@@ -12,10 +12,16 @@ export const createVinilo = async (req, res) => {
       });
     }
 
-    if (!title || !genre || !year || !image) {
+    if (!title || !genre || !year || !image || price === undefined || price === null || price === "") {
       return res
         .status(422)
         .json({ message: "Todos los campos son obligatorios" });
+    }
+
+    if (typeof price !== "number" || Number.isNaN(price) || price < 0) {
+      return res.status(422).json({
+        message: "El precio debe ser un número mayor o igual a 0",
+      });
     }
 
     const vinilo = await Vinilo.create(req.body);
@@ -136,6 +142,16 @@ export const updateVinilo = async (req, res) => {
       return res
         .status(422)
         .json({ message: "El titulo tiene que ser un string" });
+    }
+
+    if (req.body.price !== undefined) {
+      const { price } = req.body;
+
+      if (typeof price !== "number" || Number.isNaN(price) || price < 0) {
+        return res.status(422).json({
+          message: "El precio debe ser un número mayor o igual a 0",
+        });
+      }
     }
 
     const vinilo = await Vinilo.findByIdAndUpdate(id, req.body, {
