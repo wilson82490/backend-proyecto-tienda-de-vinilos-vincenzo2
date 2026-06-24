@@ -1,148 +1,147 @@
 # Vinilos API
 
-API REST desarrollada con Node.js, Express y MongoDB para gestionar vinilos.
+API REST desarrollada con Node.js, Express y MongoDB para gestionar el catálogo de una tienda de vinilos. Incluye autenticación JWT, roles de administrador, paginación, búsqueda, filtros y endpoints auxiliares para géneros y vinilos destacados.
 
 ---
 
-# Características
+## Características
 
-- CRUD completo de vinilos
-- Registro de usuarios
-- Inicio de sesión con JWT
-- Contraseñas encriptadas con bcrypt
-- Autenticación mediante Bearer Token
-- Rutas protegidas con rol de administrador
-- MongoDB Atlas
-- Seeder de datos iniciales
-- Tests con Mocha, Chai y Supertest
-
----
-
-# Tecnologías utilizadas
-
-- Node.js
-- Express
-- MongoDB Atlas
-- Mongoose
-- JWT
-- bcryptjs
-- dotenv
-- cors
-- Mocha
-- Chai
-- Supertest
+- Catálogo de vinilos con **paginación**, **búsqueda**, **ordenamiento** y **filtro por género**
+- Endpoints de géneros (`GET /api/vinilos/genres`) y vinilos destacados (`GET /api/vinilos/featured`)
+- Modelo de vinilo con campo **price** (precio obligatorio, mínimo 0)
+- Registro e inicio de sesión con **JWT**
+- Contraseñas encriptadas con **bcrypt**
+- Rutas protegidas con rol de **administrador** (CRUD de vinilos)
+- Seeders de vinilos y usuarios de ejemplo
+- Tests con **Mocha**, **Chai** y **Supertest**
 
 ---
 
-# Instalación
+## Stack tecnológico
 
-Clonar el repositorio:
+| Tecnología | Uso |
+|---|---|
+| Node.js | Runtime |
+| Express 5 | Framework HTTP |
+| MongoDB / Mongoose | Base de datos y ODM |
+| jsonwebtoken | Autenticación JWT |
+| bcryptjs | Hash de contraseñas |
+| dotenv | Variables de entorno |
+| cors | CORS |
+| Mocha + Chai + Supertest | Tests |
+
+---
+
+## Requisitos previos
+
+- [Node.js](https://nodejs.org/) 18 o superior
+- [npm](https://www.npmjs.com/)
+- Base de datos **MongoDB** (Atlas o instancia local)
+- Repositorio clonado en tu máquina
+
+---
+
+## Instalación y configuración
+
+### 1. Clonar e instalar
 
 ```bash
 git clone <url-del-repositorio>
-```
-
-Ingresar al proyecto:
-
-```bash
 cd backend-proyecto-tienda-de-vinilos-vincenzo2
-```
-
-Cambiar a la rama `dev`:
-
-```bash
 git switch dev
-```
-
-Instalar dependencias:
-
-```bash
 npm install
 ```
 
----
+### 2. Variables de entorno
 
-# Variables de entorno
-
-Crear un archivo `.env` a partir de `.env-example`:
+Copia el archivo de ejemplo y completa tus valores:
 
 ```bash
 cp .env-example .env
 ```
 
-Luego edita `.env` con tu configuración.
-
-## .env-example
+Contenido de `.env-example`:
 
 ```env
-PORT=
+PORT=3000
 MONGODB_URI=
 JWT_SECRET=
 ```
 
-## Ejemplo
+Ejemplo de configuración local (sin credenciales reales):
 
 ```env
 PORT=3000
-MONGODB_URI=mongodb+srv://usuario:password@cluster0.1yxp6uf.mongodb.net/discos?appName=Cluster0
-JWT_SECRET=mi-clave-secreta
+MONGODB_URI=mongodb+srv://<usuario>:<password>@<cluster>.mongodb.net/<nombre-db>?appName=<app>
+JWT_SECRET=una-clave-secreta-segura
 ```
+
+| Variable | Descripción |
+|---|---|
+| `PORT` | Puerto del servidor (por defecto `3000`) |
+| `MONGODB_URI` | URI de conexión a MongoDB |
+| `JWT_SECRET` | Clave secreta para firmar tokens JWT |
+
+> **Importante:** no subas el archivo `.env` al repositorio ni compartas credenciales reales.
 
 ---
 
-# Ejecutar en desarrollo
+## Ejecución
+
+### Desarrollo (con recarga automática)
 
 ```bash
 npm run dev
 ```
 
----
+El servidor quedará disponible en `http://localhost:3000`.
 
-# Ejecutar en producción
+### Producción
 
 ```bash
 npm start
 ```
 
----
+### Cargar datos iniciales
 
-# Ejecutar tests
-
-```bash
-npm test
-```
-
----
-
-# Cargar datos iniciales
-
-Poblar la base de datos con vinilos de ejemplo:
+Poblar vinilos de ejemplo:
 
 ```bash
 npm run seed
 ```
 
-Poblar la base de datos con usuarios de ejemplo:
+Poblar usuarios de ejemplo:
 
 ```bash
 npm run seed:users
 ```
 
+#### Credenciales por defecto (seeder de usuarios)
+
+| Rol | Email | Contraseña |
+|---|---|---|
+| Administrador | `admin@vinilos.com` | `admin123` |
+| Usuario | `user@vinilos.com` | `user1234` |
+
+### Tests
+
+```bash
+npm test
+```
+
+Los tests usan la configuración definida en `test/setup.js` y `.env.test`.
+
 ---
 
-# Endpoints
+## Endpoints
 
----
+### Home
 
-## Home
+#### `GET /`
 
-### GET /
+Mensaje de bienvenida.
 
-Devuelve un mensaje de bienvenida.
-
-### Respuesta exitosa
-
-#### Status: 200 OK
+**Respuesta `200`:**
 
 ```json
 {
@@ -152,15 +151,15 @@ Devuelve un mensaje de bienvenida.
 
 ---
 
-# Autenticación
+### Autenticación
 
-## Registro
+Prefijo: `/api/auth`
 
-### POST /api/auth/register
+#### `POST /api/auth/register`
 
 Registra un nuevo usuario.
 
-### Body
+**Body:**
 
 ```json
 {
@@ -170,83 +169,24 @@ Registra un nuevo usuario.
 }
 ```
 
-### Respuesta exitosa
-
-#### Status: 201 Created
-
-```json
-{
-  "message": "Usuario registrado correctamente",
-  "user": {
-    "_id": "...",
-    "name": "Vincenzo Acconcia",
-    "email": "user@example.com"
-  }
-}
-```
-
-### Posibles errores
-
-#### Status: 422 Unprocessable Entity
-
-```json
-{
-  "message": "Todos los campos son obligatorios"
-}
-```
-
-#### Status: 422 Unprocessable Entity
-
-```json
-{
-  "message": "El correo no es valido"
-}
-```
-
-#### Status: 422 Unprocessable Entity
-
-```json
-{
-  "message": "Contraseña muy corta, mínimo 6 caracteres"
-}
-```
-
-#### Status: 400 Bad Request
-
-```json
-{
-  "message": "El correo ya esta registrado"
-}
-```
-
-#### Status: 500 Internal Server Error
-
-```json
-{
-  "message": "Error al registrar al usuario"
-}
-```
+**Respuesta `201`:** usuario creado (sin contraseña).
 
 ---
 
-## Login
-
-### POST /api/auth/login
+#### `POST /api/auth/login`
 
 Inicia sesión y devuelve un token JWT.
 
-### Body
+**Body:**
 
 ```json
 {
-  "email": "example@example.com",
-  "password": "123456"
+  "email": "user@example.com",
+  "password": "1234567"
 }
 ```
 
-### Respuesta exitosa
-
-#### Status: 200 OK
+**Respuesta `200`:**
 
 ```json
 {
@@ -254,298 +194,147 @@ Inicia sesión y devuelve un token JWT.
   "token": "jwt-token",
   "user": {
     "_id": "...",
-    "name": "Juan Pérez",
-    "email": "example@example.com",
+    "name": "Vincenzo Acconcia",
+    "email": "user@example.com",
     "admin": false
   }
 }
 ```
 
-### Posibles errores
+---
 
-#### Status: 422 Unprocessable Entity
+### Vinilos
+
+Prefijo: `/api/vinilos`
+
+#### `GET /api/vinilos`
+
+Lista vinilos con paginación, búsqueda, ordenamiento y filtro por género.
+
+**Query params:**
+
+| Parámetro | Tipo | Default | Descripción |
+|---|---|---|---|
+| `page` | number | `1` | Página actual |
+| `limit` | number | `4` | Vinilos por página |
+| `search` | string | `""` | Búsqueda en título y descripción |
+| `genre` | string | — | Filtra por género exacto |
+| `sortBy` | string | `title` | Campo de ordenamiento |
+| `order` | string | `asc` | `asc` o `desc` |
+
+**Respuesta `200`:**
 
 ```json
 {
-  "message": "Todos los campos son obligatorios"
-}
-```
-
-#### Status: 401 Unauthorized
-
-```json
-{
-  "message": "Credenciales invalidas"
-}
-```
-
-#### Status: 500 Internal Server Error
-
-```json
-{
-  "message": "Error al iniciar sesión"
+  "vinilos": [
+    {
+      "_id": "...",
+      "title": "Thriller",
+      "genre": "pop",
+      "year": 1982,
+      "price": 29.99,
+      "image": "https://...",
+      "featured": false,
+      "createdAt": "2026-06-05T17:31:02.907Z",
+      "updatedAt": "2026-06-05T17:31:02.907Z"
+    }
+  ],
+  "totalPages": 3,
+  "currentPage": 1,
+  "totalItems": 12
 }
 ```
 
 ---
 
-# Vinilos
+#### `GET /api/vinilos/genres`
 
-## Obtener todos los vinilos
+Devuelve la lista de géneros distintos presentes en el catálogo.
 
-### GET /api/vinilos
-
-Devuelve todos los vinilos.
-
-### Respuesta exitosa
-
-#### Status: 200 OK
+**Respuesta `200`:**
 
 ```json
-[
-  {
-    "_id": "...",
-    "title": "Thriller",
-    "genre": "pop",
-    "year": 1982,
-    "image": "https://...",
-    "featured": false,
-    "createdAt": "2026-06-05T17:31:02.907Z",
-    "updatedAt": "2026-06-05T17:31:02.907Z"
-  }
-]
+["pop", "rock", "jazz"]
 ```
 
-### Posibles errores
+---
 
-#### Status: 500 Internal Server Error
+#### `GET /api/vinilos/featured`
+
+Devuelve hasta 3 vinilos marcados como destacados (`featured: true`).
+
+**Respuesta `200`:**
 
 ```json
 {
-  "message": "Error al obtener los vinilos"
+  "vinilos": [
+    {
+      "_id": "...",
+      "title": "Abbey Road",
+      "genre": "rock",
+      "year": 1969,
+      "price": 34.99,
+      "image": "https://...",
+      "featured": true
+    }
+  ]
 }
 ```
 
 ---
 
-## Obtener vinilo por ID
+#### `GET /api/vinilos/:id`
 
-### GET /api/vinilos/:id
+Obtiene un vinilo por ID (incluye `description`).
 
-Devuelve un vinilo por su ID.
-
-### Respuesta exitosa
-
-#### Status: 200 OK
-
-```json
-{
-  "_id": "...",
-  "title": "Thriller",
-  "genre": "pop",
-  "year": 1982,
-  "image": "https://...",
-  "featured": false,
-  "createdAt": "2026-06-05T17:31:02.907Z",
-  "updatedAt": "2026-06-05T17:31:02.907Z"
-}
-```
-
-### Posibles errores
-
-#### Status: 404 Not Found
-
-```json
-{
-  "message": "Vinilo no encontrado"
-}
-```
-
-#### Status: 500 Internal Server Error
-
-```json
-{
-  "message": "Error al obtener el vinilo"
-}
-```
+**Respuesta `200`:** objeto vinilo completo.  
+**Respuesta `404`:** `{ "message": "Vinilo no encontrado" }`
 
 ---
 
-## Crear vinilo
+#### `POST /api/vinilos`
 
-### POST /api/vinilos
+Crea un vinilo. **Requiere JWT + rol admin.**
 
-Requiere autenticación y rol de administrador.
+**Headers:** `Authorization: Bearer <token>`
 
-### Headers
-
-```txt
-Authorization: Bearer TOKEN
-```
-
-### Body
+**Body:**
 
 ```json
 {
   "title": "Thriller",
+  "description": "Álbum icónico de Michael Jackson",
   "genre": "pop",
   "year": 1982,
-  "image": "https://..."
-}
-```
-
-### Respuesta exitosa
-
-#### Status: 201 Created
-
-```json
-{
-  "_id": "...",
-  "title": "Thriller",
-  "genre": "pop",
-  "year": 1982,
+  "price": 29.99,
   "image": "https://...",
-  "featured": false,
-  "createdAt": "2026-06-05T17:31:02.907Z",
-  "updatedAt": "2026-06-05T17:31:02.907Z"
+  "featured": false
 }
 ```
 
-### Posibles errores
-
-#### Status: 401 Unauthorized
-
-```json
-{
-  "message": "Falta el token"
-}
-```
-
-#### Status: 403 Forbidden
-
-```json
-{
-  "message": "Acceso denegado"
-}
-```
-
-#### Status: 422 Unprocessable Entity
-
-```json
-{
-  "message": "Todos los campos son obligatorios"
-}
-```
-
-#### Status: 500 Internal Server Error
-
-```json
-{
-  "message": "Error al crear el vinilo"
-}
-```
+**Respuesta `201`:** vinilo creado.
 
 ---
 
-## Actualizar vinilo
+#### `PUT /api/vinilos/:id`
 
-### PUT /api/vinilos/:id
+Actualiza un vinilo. **Requiere JWT + rol admin.**
 
-Requiere autenticación y rol de administrador.
+**Headers:** `Authorization: Bearer <token>`
 
-### Headers
+**Body:** campos a actualizar (misma estructura que POST).
 
-```txt
-Authorization: Bearer TOKEN
-```
-
-### Body
-
-```json
-{
-  "title": "Thriller Remastered",
-  "genre": "pop",
-  "year": 2003,
-  "image": "https://..."
-}
-```
-
-### Respuesta exitosa
-
-#### Status: 200 OK
-
-```json
-{
-  "_id": "...",
-  "title": "Thriller Remastered",
-  "genre": "pop",
-  "year": 2003,
-  "image": "https://...",
-  "featured": false,
-  "createdAt": "2026-06-05T17:31:02.907Z",
-  "updatedAt": "2026-06-05T17:31:02.907Z"
-}
-```
-
-### Posibles errores
-
-#### Status: 401 Unauthorized
-
-```json
-{
-  "message": "Token invalido"
-}
-```
-
-#### Status: 403 Forbidden
-
-```json
-{
-  "message": "Acceso denegado"
-}
-```
-
-#### Status: 404 Not Found
-
-```json
-{
-  "message": "Vinilo no encontrado"
-}
-```
-
-#### Status: 422 Unprocessable Entity
-
-```json
-{
-  "message": "El titulo tiene que ser un string"
-}
-```
-
-#### Status: 500 Internal Server Error
-
-```json
-{
-  "message": "Error al actualizar el vinilo"
-}
-```
+**Respuesta `200`:** vinilo actualizado.
 
 ---
 
-## Eliminar vinilo
+#### `DELETE /api/vinilos/:id`
 
-### DELETE /api/vinilos/:id
+Elimina un vinilo. **Requiere JWT + rol admin.**
 
-Requiere autenticación y rol de administrador.
+**Headers:** `Authorization: Bearer <token>`
 
-### Headers
-
-```txt
-Authorization: Bearer TOKEN
-```
-
-### Respuesta exitosa
-
-#### Status: 200 OK
+**Respuesta `200`:**
 
 ```json
 {
@@ -553,45 +342,60 @@ Authorization: Bearer TOKEN
 }
 ```
 
-### Posibles errores
+---
 
-#### Status: 401 Unauthorized
+## Modelo Vinilo
 
-```json
-{
-  "message": "Falta el token"
-}
-```
+| Campo | Tipo | Notas |
+|---|---|---|
+| `title` | String | Obligatorio, mínimo 3 caracteres |
+| `description` | String | Opcional |
+| `genre` | String | Obligatorio |
+| `year` | Number | Obligatorio |
+| `price` | Number | Obligatorio, ≥ 0 |
+| `image` | String | URL obligatoria |
+| `featured` | Boolean | Default `false` |
+| `createdAt` / `updatedAt` | Date | Timestamps automáticos |
 
-#### Status: 403 Forbidden
+---
 
-```json
-{
-  "message": "Acceso denegado"
-}
-```
+## Estructura del proyecto
 
-#### Status: 404 Not Found
-
-```json
-{
-  "message": "Vinilo no encontrado"
-}
-```
-
-#### Status: 500 Internal Server Error
-
-```json
-{
-  "message": "Error al borrar el vinilo"
-}
+```txt
+backend-proyecto-tienda-de-vinilos-vincenzo2/
+├── src/
+│   ├── config/
+│   │   └── db.js
+│   ├── controllers/
+│   │   ├── auth.controller.js
+│   │   └── vinilo.controller.js
+│   ├── middlewares/
+│   │   ├── auth.middleware.js
+│   │   └── admin.middleware.js
+│   ├── models/
+│   │   ├── User.js
+│   │   └── Vinilo.js
+│   ├── routes/
+│   │   ├── auth.router.js
+│   │   └── vinilo.router.js
+│   └── seeders/
+│       ├── user.seeder.js
+│       └── vinilo.seeder.js
+├── test/
+│   ├── auth.test.js
+│   ├── vinilos.test.js
+│   └── setup.js
+├── app.js
+├── index.js
+├── .env-example
+└── package.json
 ```
 
 ---
 
-# Deploy
+## Deploy
 
-Backend desplegado en Render.
+Backend desplegado en Render:
 
 ```txt
 https://mi-api.onrender.com
@@ -599,30 +403,8 @@ https://mi-api.onrender.com
 
 ---
 
-# Estructura del proyecto
-
-```txt
-src/
-├── config/
-├── controllers/
-├── middlewares/
-├── models/
-├── routes/
-└── seeders/
-
-test/
-├── auth.test.js
-├── vinilos.test.js
-└── setup.js
-
-app.js
-index.js
-```
-
----
-
-# Autor
+## Autor
 
 Proyecto desarrollado como práctica del curso Full Stack de Neoland.
 
-Autor: Vincenzo Acconcia
+**Autor:** Vincenzo Acconcia

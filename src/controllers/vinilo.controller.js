@@ -103,7 +103,7 @@ export const getVinilosFeatured = async (req, res) => {
   try {
     const featuredVinilos = await Vinilo.find({ featured: true })
       .select("-description -__v")
-      .limit(3);
+      .limit(5);
 
     res.json({
       vinilos: featuredVinilos,
