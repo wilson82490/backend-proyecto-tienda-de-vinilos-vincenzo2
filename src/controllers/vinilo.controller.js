@@ -2,9 +2,9 @@ import Vinilo from "../models/Vinilo.js";
 
 export const createVinilo = async (req, res) => {
   try {
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    // await new Promise((resolve) => setTimeout(resolve, 3000));
 
-    const { title, genre, year, image } = req.body;
+    const { title, genre, year, image, price } = req.body;
 
     if (!title || title.trim() === "" || title.length < 3) {
       return res.status(422).json({
@@ -12,10 +12,16 @@ export const createVinilo = async (req, res) => {
       });
     }
 
-    if (!title || !genre || !year || !image) {
+    if (!title || !genre || !year || !image || price === undefined || price === null || price === "") {
       return res
         .status(422)
         .json({ message: "Todos los campos son obligatorios" });
+    }
+
+    if (typeof price !== "number" || Number.isNaN(price) || price < 0) {
+      return res.status(422).json({
+        message: "El precio debe ser un número mayor o igual a 0",
+      });
     }
 
     const vinilo = await Vinilo.create(req.body);
@@ -34,12 +40,78 @@ export const createVinilo = async (req, res) => {
 
 export const getVinilos = async (req, res) => {
   try {
-    const vinilos = await Vinilo.find().select("-description -__v");
+    const { sortBy = "title", order = "asc", search = "", genre } = req.query;
 
-    res.json(vinilos);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 4;
+    const skip = (page - 1) * limit;
+
+    const filter = {
+      $and: [
+        {
+          $or: [
+            {
+              title: {
+                $regex: search,
+                $options: "i",
+              },
+            },
+            {
+              description: {
+                $regex: search,
+                $options: "i",
+              },
+            },
+          ],
+        },
+        genre ? { genre } : {},
+      ],
+    };
+
+    const [vinilos, totalItems] = await Promise.all([
+      Vinilo.find(filter)
+        .select("-description -__v")
+        .sort({ [sortBy]: order === "desc" ? -1 : 1 })
+        .skip(skip)
+        .limit(limit),
+      Vinilo.countDocuments(filter),
+    ]);
+
+    res.json({
+      vinilos,
+      totalPages: Math.ceil(totalItems / limit) || 1,
+      currentPage: page,
+      totalItems,
+    });
   } catch (error) {
     // console.log(error.message);
     res.status(500).json({ message: "Error al obtener los vinilos" });
+  }
+};
+
+export const getVinilosGenres = async (req, res) => {
+  try {
+    const genres = await Vinilo.distinct("genre");
+
+    res.json(genres);
+  } catch (error) {
+    res.status(500).json({ message: "Error al obtener los generos" });
+  }
+};
+
+export const getVinilosFeatured = async (req, res) => {
+  try {
+    const featuredVinilos = await Vinilo.find({ featured: true })
+      .select("-description -__v")
+      .limit(5);
+
+    res.json({
+      vinilos: featuredVinilos,
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error al obtener los vinilos destacados" });
   }
 };
 
@@ -62,7 +134,7 @@ export const getViniloById = async (req, res) => {
 
 export const updateVinilo = async (req, res) => {
   try {
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    // await new Promise((resolve) => setTimeout(resolve, 3000));
 
     const { id } = req.params;
 
@@ -70,6 +142,16 @@ export const updateVinilo = async (req, res) => {
       return res
         .status(422)
         .json({ message: "El titulo tiene que ser un string" });
+    }
+
+    if (req.body.price !== undefined) {
+      const { price } = req.body;
+
+      if (typeof price !== "number" || Number.isNaN(price) || price < 0) {
+        return res.status(422).json({
+          message: "El precio debe ser un número mayor o igual a 0",
+        });
+      }
     }
 
     const vinilo = await Vinilo.findByIdAndUpdate(id, req.body, {
@@ -95,8 +177,6 @@ export const updateVinilo = async (req, res) => {
 
 export const deleteVinilo = async (req, res) => {
   try {
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-
     const { id } = req.params;
 
     const vinilo = await Vinilo.findByIdAndDelete(id);

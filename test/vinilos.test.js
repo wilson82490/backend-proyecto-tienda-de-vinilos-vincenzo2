@@ -35,6 +35,7 @@ describe("CRUD Vinilos", function () {
       title: "Vinilo de prueba",
       genre: "Rock",
       year: 2000,
+      price: 24.99,
       image: "https://picsum.photos/300/400?random=1",
       featured: false,
     });
@@ -46,7 +47,24 @@ describe("CRUD Vinilos", function () {
     const response = await request(app).get("/api/vinilos");
 
     expect(response.status).to.equal(200);
+    expect(response.body.vinilos).to.be.an("array");
+    expect(response.body).to.have.property("totalItems");
+    expect(response.body).to.have.property("totalPages");
+    expect(response.body).to.have.property("currentPage");
+  });
+
+  test("tiene que traer los generos disponibles", async () => {
+    const response = await request(app).get("/api/vinilos/genres");
+
+    expect(response.status).to.equal(200);
     expect(response.body).to.be.an("array");
+  });
+
+  test("tiene que traer los vinilos destacados", async () => {
+    const response = await request(app).get("/api/vinilos/featured");
+
+    expect(response.status).to.equal(200);
+    expect(response.body.vinilos).to.be.an("array");
   });
 
   test("el Admin tiene que poder crear un vinilo", async () => {
@@ -63,6 +81,7 @@ describe("CRUD Vinilos", function () {
       title: "Un vinilo",
       genre: "Hip hop",
       year: 1998,
+      price: 19.99,
       image: "https://picsum.photos/300/400?random=5",
       featured: false,
     };
@@ -76,6 +95,28 @@ describe("CRUD Vinilos", function () {
     expect(response.body).to.have.property("title", vinilo.title);
     expect(response.body).to.have.property("genre", vinilo.genre);
     expect(response.body).to.have.property("year", vinilo.year);
+    expect(response.body).to.have.property("price", vinilo.price);
+  });
+
+  test("devuelve 422 si falta el precio al crear un vinilo", async () => {
+    const responseLogin = await request(app)
+      .post("/api/auth/login")
+      .send({ email: ADMIN_EMAIL, password: ADMIN_PASSWORD });
+
+    const token = responseLogin.body.token;
+
+    const response = await request(app)
+      .post("/api/vinilos")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        title: "Sin precio",
+        genre: "Rock",
+        year: 2000,
+        image: "https://picsum.photos/300/400?random=10",
+        featured: false,
+      });
+
+    expect(response.status).to.equal(422);
   });
 
   test("tiene que traer un vinilo por id", async () => {
@@ -113,6 +154,7 @@ describe("CRUD Vinilos", function () {
       title: "Vinilo para borrar",
       genre: "Jazz",
       year: 1990,
+      price: 15,
       image: "https://picsum.photos/300/400?random=9",
     });
 
